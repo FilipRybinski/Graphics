@@ -11,6 +11,7 @@ namespace Grafika.Services
     public interface IDrawService
     {
         public Point Point { get; set; }
+        public Color color { get; set; }
         public Line Line(double x1, double y1, double x2, double y2);
         public Polygon Triangle();
         public TextBox Text(double x, double y);
@@ -29,6 +30,7 @@ namespace Grafika.Services
     }
     public class DrawService : IDrawService
     {
+        public Color color { get; set; }= Color.FromRgb(0, 0, 0);
         public Point Point { get; set; } = new Point();
         public UIElement? selected { get; set; } = null;
         public Line? currentLine { get; set; } = null;
@@ -41,7 +43,7 @@ namespace Grafika.Services
         {
             return new Line()
             {
-                Stroke = SystemColors.WindowFrameBrush,
+                Stroke = new SolidColorBrush(color),
                 X1 = x1,
                 Y1 = y1,
                 X2 = x2,
@@ -52,7 +54,7 @@ namespace Grafika.Services
         {
             var triangle = new Polygon()
             {
-                Stroke = SystemColors.WindowFrameBrush,
+                Stroke = new SolidColorBrush(color),
                 Fill = Brushes.Transparent,
                 StrokeThickness = 2
             };
@@ -65,7 +67,7 @@ namespace Grafika.Services
         {
             var square = new Rectangle()
             {
-                Stroke = SystemColors.WindowFrameBrush,
+                Stroke = new SolidColorBrush(color),
                 Fill = Brushes.Transparent,
                 StrokeThickness = 2,
                 Width = 0,
@@ -79,7 +81,7 @@ namespace Grafika.Services
         {
             Ellipse circle = new Ellipse()
             {
-                Stroke = SystemColors.WindowFrameBrush,
+                Stroke = new SolidColorBrush(color),
                 Fill = Brushes.Transparent,
                 StrokeThickness = 2,
                 Width = 0,
@@ -93,7 +95,7 @@ namespace Grafika.Services
         {
             TextBox textBox = new TextBox
             {
-                Foreground = SystemColors.WindowFrameBrush,
+                Foreground = new SolidColorBrush(color),
                 FontSize = 14,
                 Width = 100,
             };

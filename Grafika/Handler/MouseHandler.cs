@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Grafika.Handler
 {
-    public class MouseHandler
+    public interface IMouseHandler
+    {
+        public void AttachCanvas(Canvas canvas);
+        public MouseHandler getInstance();
+    }
+    public class MouseHandler : IMouseHandler
     {
         public event MouseButtonEventHandler MouseDownEvent;
         public event MouseEventHandler MouseMoveEvent;
@@ -20,6 +26,10 @@ namespace Grafika.Handler
             canvas.MouseUp += MouseUp;
         }
 
+        public MouseHandler getInstance()
+        {
+            return this;
+        }
         private void MouseDown(object sender, MouseButtonEventArgs e)
         {
             MouseDownEvent?.Invoke(sender, e);

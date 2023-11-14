@@ -14,19 +14,48 @@ using Action = Grafika.Enums.Action;
 
 namespace Grafika
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public interface IMainViewModel : INotifyPropertyChanged
+    {
+        public ICommand ShiftingCommand { get; set; }
+        public ICommand RotateCommand { get; set; }
+        public ICommand FreeHandCommand { get; set; }
+        public ICommand LineCommand { get; set; }
+        public ICommand CircleCommand { get; set; }
+        public ICommand TriangleCommand { get; set; }
+        public ICommand SquareCommand { get; set; }
+        public ICommand TextCommand { get; set; }
+        public ICommand ClearCommand { get; set; }
+        public ICommand LoadCommand { get; set; }
+        public ICommand SaveCommand { get; set; }
+    }
+    public class MainViewModel : IMainViewModel
     {
         private readonly IDrawService _drawService;
         private readonly IFileSerivce _fileSerivce;
+        private readonly IColorService _colorService;
+        private readonly IColorHandler _colorHandler;
+        private IMouseHandler _mouseHandler;
         private Canvas paintSufrace;
         private UIElement optionSurface;
         private MainWindow window;
-        private MouseHandler mouseHandler;
         private Action action = Action.Default;
-        public MainViewModel(Canvas canvas,MainWindow window, UIElement _optionSurface) {
-            _drawService = new DrawService();
-            _fileSerivce=new FileService(canvas);
+        public MainViewModel(
+            Canvas canvas,
+            MainWindow mainWindow,
+            UIElement _optionSurface,
+            IFileSerivce fileSerivce,
+            IDrawService drawService,
+            IMouseHandler mouseHanlder,
+            IColorService colorService,
+            IColorHandler colorHandler)
+        {
+            _drawService = drawService;
+            _fileSerivce=fileSerivce;
+            _mouseHandler = mouseHanlder;
+            _colorService = colorService;
+            _colorHandler = colorHandler;
             optionSurface = _optionSurface;
+            window = mainWindow;
             ShiftingCommand = new RelayCommand(Shifting);
             RotateCommand= new RelayCommand(Rotate);
             FreeHandCommand=new RelayCommand(FreeHand);
@@ -38,11 +67,19 @@ namespace Grafika
             ClearCommand=new RelayCommand(Clear);
             SaveCommand = new RelayCommand(Save);
 
-            mouseHandler = new MouseHandler();
-            mouseHandler.AttachCanvas(canvas);
-            mouseHandler.MouseDownEvent += MouseDownHandler;
-            mouseHandler.MouseMoveEvent += MouseMoveHandler;
-            mouseHandler.MouseUpEvent += MouseUpHandler;
+            _mouseHandler.AttachCanvas(canvas);
+            _mouseHandler.getInstance().MouseDownEvent += MouseDownHandler;
+            _mouseHandler.getInstance().MouseMoveEvent += MouseMoveHandler;
+            _mouseHandler.getInstance().MouseUpEvent += MouseUpHandler;
+
+            _colorHandler.AttachSelectedType(window);
+
+            _colorHandler.AttachRGB(window);
+            _colorHandler.getInstance().REvent += OnValueChangeRGB;
+            _colorHandler.getInstance().GEvent += OnValueChangeRGB;
+            _colorHandler.getInstance().BEvent += OnValueChangeRGB;
+
+            _colorHandler.getInstance().selected += OnValueChange;
 
             paintSufrace = window.paintSurface;
         }
@@ -57,6 +94,7 @@ namespace Grafika
         public ICommand ClearCommand { get; set; }
         public ICommand LoadCommand { get; set; }
         public ICommand SaveCommand { get; set; }
+        public ICommand ValueChange { get; set; }
         private void Shifting(object sender)
         {
             action = Action.Shifting;
@@ -91,7 +129,78 @@ namespace Grafika
         }
         private void Save(object sender)
         {
-            _fileSerivce.SaveFile();
+            _fileSerivce.SaveFile(paintSufrace);
+        }
+        private void OnValueChange(object sender, RoutedEventArgs e)
+        {
+            if (sender is RadioButton radioButton && radioButton.IsChecked == true)
+            {
+                switch (radioButton.Content.ToString())
+                {
+                    case "RGB":
+                        _colorHandler.getInstance().CEvent -= OnValueChangeCMYK;
+                        _colorHandler.getInstance().MEvent -= OnValueChangeCMYK;
+                        _colorHandler.getInstance().YEvent -= OnValueChangeCMYK;
+                        _colorHandler.getInstance().KEvent -= OnValueChangeCMYK;
+
+                        _colorHandler.getInstance().HEvent -= OnValueChangeHSV;
+                        _colorHandler.getInstance().SEvent -= OnValueChangeHSV;
+                        _colorHandler.getInstance().VEvent -= OnValueChangeHSV;
+
+                        _colorHandler.AttachRGB(window);
+                        _colorHandler.getInstance().REvent += OnValueChangeRGB;
+                        _colorHandler.getInstance().GEvent += OnValueChangeRGB;
+                        _colorHandler.getInstance().BEvent += OnValueChangeRGB;
+
+                        break;
+                    case "CMYK":
+                        _colorHandler.getInstance().REvent -= OnValueChangeRGB;
+                        _colorHandler.getInstance().GEvent -= OnValueChangeRGB;
+                        _colorHandler.getInstance().BEvent -= OnValueChangeRGB;
+
+                        _colorHandler.getInstance().HEvent -= OnValueChangeHSV;
+                        _colorHandler.getInstance().SEvent -= OnValueChangeHSV;
+                        _colorHandler.getInstance().VEvent -= OnValueChangeHSV;
+
+                        _colorHandler.AttachCMYK(window);
+                        _colorHandler.getInstance().CEvent += OnValueChangeCMYK;
+                        _colorHandler.getInstance().MEvent += OnValueChangeCMYK;
+                        _colorHandler.getInstance().YEvent += OnValueChangeCMYK;
+                        _colorHandler.getInstance().KEvent += OnValueChangeCMYK;
+                        break;
+                    case "HSV":
+
+                        _colorHandler.getInstance().REvent -= OnValueChangeRGB;
+                        _colorHandler.getInstance().GEvent -= OnValueChangeRGB;
+                        _colorHandler.getInstance().BEvent -= OnValueChangeRGB;
+
+                        _colorHandler.getInstance().CEvent -= OnValueChangeCMYK;
+                        _colorHandler.getInstance().MEvent -= OnValueChangeCMYK;
+                        _colorHandler.getInstance().YEvent -= OnValueChangeCMYK;
+                        _colorHandler.getInstance().KEvent -= OnValueChangeCMYK;
+
+                        _colorHandler.AttachHSV(window);
+                        _colorHandler.getInstance().HEvent += OnValueChangeHSV;
+                        _colorHandler.getInstance().SEvent += OnValueChangeHSV;
+                        _colorHandler.getInstance().VEvent += OnValueChangeHSV;
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        private void OnValueChangeRGB(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            _colorService.updateRGB(window);
+        }
+        private void OnValueChangeCMYK(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            _colorService.updateCMYK(window);
+        }
+        private void OnValueChangeHSV(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            _colorService.updateHSV(window);
         }
         private void Clear(object sender)
         {

@@ -5,29 +5,91 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Grafika"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="800" Width="1020">
     <Grid>
         <Canvas  Name="paintSurface" MouseDown="MouseDownHandler" MouseMove="MouseMoveHandler" MouseUp="MouseUpHandler">
-            <StackPanel Name="optionSurface" VerticalAlignment="Top" Width="800" Height="47" HorizontalAlignment="Center">
-                <Menu>
-                    <MenuItem Header="File">
-                        <MenuItem Header="Save" Command="{ Binding SaveCommand }"/>
-                        <MenuItem Header="Load" Command="{ Binding LoadCommand }"/>
-                    </MenuItem>
-                    <Button Content="Przesunięcie" Command="{ Binding ShiftingCommand }" Width="80"/>
-                    <Button Content="Rotacja" Command="{ Binding RotateCommand }" Width="80"/>
-                    <Button Content="Odręcznie" Command="{ Binding FreeHandCommand }" Width="80"/>
-                    <Button Content="Linia" Command="{ Binding LineCommand }" Width="80"/>
-                    <Button Content="Trójkąt" Command="{ Binding TriangleCommand }" Width="80"/>
-                    <Button Content="Kwadrat" Command="{ Binding SquareCommand }" Width="80"/>
-                    <Button Content="Koło" Command="{ Binding CircleCommand }" Width="80"/>
-                    <Button Content="Tekst" Command="{ Binding TextCommand }" Width="80"/>
-                    <Button Content="Clear" Command="{ Binding ClearCommand }" Width="80"/>
-                </Menu>
+            <StackPanel Name="optionSurface">
+                <StackPanel  VerticalAlignment="Top" Width="1000" HorizontalAlignment="Center">
+                    <Menu>
+                        <MenuItem Header="File">
+                            <MenuItem Header="Save" Command="{ Binding SaveCommand }"/>
+                            <MenuItem Header="Load" Command="{ Binding LoadCommand }"/>
+                        </MenuItem>
+                        <Button Content="Przesunięcie" Command="{ Binding ShiftingCommand }" Width="80"/>
+                        <Button Content="Rotacja" Command="{ Binding RotateCommand }" Width="80"/>
+                        <Button Content="Odręcznie" Command="{ Binding FreeHandCommand }" Width="80"/>
+                        <Button Content="Linia" Command="{ Binding LineCommand }" Width="80"/>
+                        <Button Content="Trójkąt" Command="{ Binding TriangleCommand }" Width="80"/>
+                        <Button Content="Kwadrat" Command="{ Binding SquareCommand }" Width="80"/>
+                        <Button Content="Koło" Command="{ Binding CircleCommand }" Width="80"/>
+                        <Button Content="Tekst" Command="{ Binding TextCommand }" Width="80"/>
+                        <Button Content="Clear" Command="{ Binding ClearCommand }" Width="80"/>
+                        <Button Content="Otwórz kostkę RGB" Click="OpenRGBWindow_Click" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Menu>
+                </StackPanel>
+                <StackPanel Margin="10" HorizontalAlignment="Left" Height="763" RenderTransformOrigin="0.5,0.5" Canvas.Left="5" Canvas.Top="44" Width="101">
+                    <RadioButton Name="RGB" HorizontalAlignment="Center" Content="RGB" Checked="RadioButton" IsChecked="True"/>
+                    <!-- Red Slider -->
+                    <Slider x:Name="redSlider" Minimum="0" Value="{Binding ElementName=redTextBox, Path=Text}"  Maximum="255" ValueChanged="ValueChanged"/>
+                    <TextBlock Text="Red" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="redTextBox" Text="{Binding ElementName=redSlider, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <!-- Green Slider -->
+                    <Slider x:Name="greenSlider" Minimum="0" Value="{Binding ElementName=greenTextBox, Path=Text}" Maximum="255" ValueChanged="ValueChanged"/>
+                    <TextBlock Text="Green" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="greenTextBox" Text="{Binding ElementName=greenSlider, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <!-- Blue Slider -->
+                    <Slider x:Name="blueSlider" Minimum="0" Value="{Binding ElementName=blueTextBox, Path=Text}"  Maximum="255" ValueChanged="ValueChanged"/>
+                    <TextBlock Text="Blue" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="blueTextBox" Text="{Binding ElementName=blueSlider, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <RadioButton Name="CMYK" HorizontalAlignment="Center" Content="CMYK" Checked="RadioButton"/>
+                    <!-- Cyan Slider -->
+                    <Slider x:Name="cyanSlider" Minimum="0" Value="{Binding ElementName=cyanTextBox, Path=Text}"  Maximum="100" ValueChanged="ValueChanged"/>
+                    <TextBlock Text="Cyan" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="cyanTextBox" Text="{Binding ElementName=cyanSlider, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <!-- Magenta Slider -->
+                    <Slider x:Name="magentaSlider" Minimum="0" Value="{Binding ElementName=magentaTextBox, Path=Text}"  Maximum="100" ValueChanged="ValueChanged"/>
+                    <TextBlock Text="Magenta" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="magentaTextBox" Text="{Binding ElementName=magentaSlider, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <!-- Yellow Slider -->
+                    <Slider x:Name="yellowSlider" Minimum="0" Value="{Binding ElementName=yellowTextBox, Path=Text}"  Maximum="100" ValueChanged="ValueChanged"/>
+                    <TextBlock Text="Yellow" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="yellowTextBox" Text="{Binding ElementName=yellowSlider, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <!-- Black Slider -->
+                    <Slider x:Name="blackSlider" Minimum="0" Value="{Binding ElementName=blackTextBox, Path=Text}"  Maximum="100" ValueChanged="ValueChanged"/>
+                    <TextBlock Text="Black" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="blackTextBox" Text="{Binding ElementName=blackSlider, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <RadioButton Name="HSV" HorizontalAlignment="Center" Content="HSV"  Checked="RadioButton"/>
+                    <!-- Hue Slider -->
+                    <Slider x:Name="hueSlider" Minimum="0" Value="{Binding ElementName=hueTextBox, Path=Text}"  Maximum="100" ValueChanged="ValueChanged"/>
+                    <TextBlock Text="Hue" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="hueTextBox" Text="{Binding ElementName=hueSlider, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <!-- Saturation Slider -->
+                    <Slider x:Name="saturationSlider" Minimum="0" Value="{Binding ElementName=saturationTextBox, Path=Text}"  Maximum="100" ValueChanged="ValueChanged"/>
+                    <TextBlock Text="Saturation" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="saturationTextBox" Text="{Binding ElementName=saturationSlider, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <!-- Black Slider -->
+                    <Slider x:Name="valueSlider" Minimum="0" Value="{Binding ElementName=valueTextBox, Path=Text}"  Maximum="100" ValueChanged="ValueChanged"/>
+                    <TextBlock Text="Value" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="valueTextBox" Text="{Binding ElementName=valueSlider, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                    <!-- Color View -->
+                    <Rectangle x:Name="colorPreview" Width="58" Height="32" Margin="0,10,0,0"/>
+
+                </StackPanel>
             </StackPanel>
+
             <Canvas.Background>
                 <SolidColorBrush Color="White" Opacity="0"/>
             </Canvas.Background>
         </Canvas>
+
     </Grid>
 </Window>

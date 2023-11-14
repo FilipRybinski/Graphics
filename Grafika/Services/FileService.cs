@@ -14,16 +14,11 @@ namespace Grafika.Services
 {
     public interface IFileSerivce
     {
-        public void SaveFile();
+        public void SaveFile(Canvas paintSurface);
     }
     public class FileService : IFileSerivce
     {
-        Canvas paintSufrace;
-        public FileService(Canvas canvas)
-        {
-            paintSufrace= canvas;
-        }
-        public void SaveFile()
+        public void SaveFile(Canvas paintSurface)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Image Files|*.png;*.jpg;*.jpeg;*.gif|All Files|*.*";
@@ -31,7 +26,7 @@ namespace Grafika.Services
             if (saveFileDialog.ShowDialog() == true)
             {
                 string fileName = saveFileDialog.FileName;
-                SaveSurfaceAsImage(paintSufrace, fileName);
+                SaveSurfaceAsImage(paintSurface, fileName);
             }
         }
         private void SaveSurfaceAsImage(Canvas canvas, string fileName)
