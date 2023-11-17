@@ -22,6 +22,7 @@ namespace Grafika.Services
     {
         public void SaveFile(Canvas paintSurface);
         public  void LoadImage(FileWindow fileWindow);
+        public void SaveImage(FileWindow fileWindow);
     }
     public class FileService : IFileSerivce
     {
@@ -52,7 +53,37 @@ namespace Grafika.Services
             }
         }
 
+        public void SaveImage(FileWindow fileWindow)
+        {
+            if (fileWindow.ImageView.Source == null)
+            {
+                MessageBox.Show("Musisz na poczatku cos wczytac zeby zapisac");
+                return;
+            }
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "PBM Files (*.pbm)|*.pbm|PGM Files (*.pgm)|*.pgm|PPM Files (*.ppm)|*.ppm",
+                Title = "Save Image"
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                switch(saveFileDialog.FileName.Substring(saveFileDialog.FileName.Length- 3).ToLower())
+                {
+                    case "ppm":
+                        SaveAsPpm(fileWindow.ImageView.Source, saveFileDialog.FileName);
+                        break;
+                    case "pbm":
+                        SaveAsPbm(fileWindow.ImageView.Source, saveFileDialog.FileName);
+                        break;
+                    case "pgm":
+                        SaveAsPgm(fileWindow.ImageView.Source, saveFileDialog.FileName);
+                        break;
+                    default:
+                        throw new FormatException();
+                }
+            }
 
+        }
 
         public void LoadImage(FileWindow fileWindow)
         {
@@ -84,10 +115,11 @@ namespace Grafika.Services
                     List<int> pixels = new List<int>();
                     while ((line = streamReader.ReadLine()) != null)
                     {
+                        line = line.Split('#')[0];
                         if (!string.IsNullOrEmpty(line))
                         {
-                            line = line.Split('#')[0].Trim();
-                            IEnumerable<int> numbers = GetNumbersFromString(line);
+                            int[] numbers = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).Select(e => Convert.ToInt32(e)).ToArray();
+                            Console.WriteLine(numbers);
                             foreach (int match in numbers)
                             {
                                 if (width == 0 )
@@ -127,7 +159,7 @@ namespace Grafika.Services
                                 fileWindow.ImageView.Source = CreatePpmImage(width, height, pixels);
                                 return;
                             default:
-                                throw new Exception();
+                                throw new FormatException();
                         }
                     });
                 }
@@ -138,7 +170,7 @@ namespace Grafika.Services
                     using (var bufferedStream = new BufferedStream(fileStream))
                     using ( var binaryReader=new BinaryReader(bufferedStream))
                     {
-                        formatType = ReadOneLine(binaryReader)?.Split('#')[0]?.Trim();
+                        ReadOneLine(binaryReader)?.Split('#')[0]?.Trim(); // skip line
                         bool endStrings = false;
                         int width = 0;
                         int height = 0;
@@ -147,12 +179,12 @@ namespace Grafika.Services
                         List<int> pixels = new List<int>();
                         while ((line=ReadOneLine(binaryReader)) != null && endStrings==false)
                         {
+                            line = line.Split('#')[0];
                             if (!string.IsNullOrEmpty(line))
                             {
-                                line = line.Split('#')[0].Trim();
-                                IEnumerable<int> numbers = GetNumbersFromString(line);
+                                int[] numbers = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).Select(e => Convert.ToInt32(e)).ToArray();
                                 foreach (int match in numbers)
-                                {
+                                    {
                                     if (width == 0)
                                     {
                                         width = match;
@@ -186,26 +218,24 @@ namespace Grafika.Services
                         {
                             pixels.RemoveAt(0);
                         }
-                    fileWindow.Dispatcher.Invoke(() =>
-                    {
-                        switch (formatType)
+                        fileWindow.Dispatcher.Invoke(() =>
                         {
-                            case "P4":
-                                fileWindow.ImageView.Source = CreatePbmImage(width, height, pixels);
-                                return;
-                            case "P5":
-                                break;
-                            case "P6":
-
-                                fileWindow.ImageView.Source = CreatePpmImage(width, height, pixels);
-                                return;
-                            default:
-                                throw new Exception();
-                        }
-                    });
+                            switch (formatType)
+                            {
+                                case "P4":
+                                    fileWindow.ImageView.Source = CreatePbmImage(width, height, pixels);
+                                    return;
+                                case "P5":
+                                    break;
+                                case "P6":
+                                    fileWindow.ImageView.Source = CreatePpmImage(width, height, pixels);
+                                    return;
+                                default:
+                                    throw new FormatException();
+                            }
+                        });
                     }
-                }
-                throw new Exception();
+            }
         }
         private string ReadOneLine(BinaryReader reader)
         {
@@ -224,39 +254,42 @@ namespace Grafika.Services
             for (int i = 0; i < pixels.Count; i += 3)
             {
                 int index = i / 3 * 4;
-                pixelData[index] = (byte)pixels[i + 2]; // Blue
-                pixelData[index + 1] = (byte)pixels[i + 1]; // Green
-                pixelData[index + 2] = (byte)pixels[i]; // Red
-                pixelData[index + 3] = 255;   // Alpha
+                pixelData[index] = (byte)pixels[i + 2];
+                pixelData[index + 1] = (byte)pixels[i + 1];
+                pixelData[index + 2] = (byte)pixels[i];
+                pixelData[index + 3] = 255;
             }
             return CreateBitmap(width, height, pixelData);
         }
         private BitmapSource CreatePgmImage(int width, int height, List<int> pixels)
         {
             byte[] pixelData = new byte[width * height * 4];
+
             for (int i = 0; i < pixels.Count; i++)
             {
-                byte color = (byte)pixels[i];
-                int index = i * 4;
-                pixelData[index] = color;
-                pixelData[index + 1] = color;
-                pixelData[index + 2] = color;
-                pixelData[index + 3] = 255;
+                byte grayValue = (byte)pixels[i];
+                pixelData[i * 4] = grayValue;
+                pixelData[i * 4 + 1] = grayValue;
+                pixelData[i * 4 + 2] = grayValue; 
+                pixelData[i * 4 + 3] = 255; 
             }
+
             return CreateBitmap(width, height, pixelData);
         }
         private BitmapSource CreatePbmImage(int width,int height,List<int> pixels)
         {
             byte[] pixelData = new byte[width * height * 4];
+
             for (int i = 0; i < pixels.Count; i++)
             {
-                byte color = pixels[i] == 1 ? (byte)0 : (byte)255;
-                int index = i * 4;
-                pixelData[index] = color;
-                pixelData[index + 1] = color;
-                pixelData[index + 2] = color;
-                pixelData[index + 3] = 255;
+                byte pixelValue = (byte)(pixels[i] == 0 ? 0 : 255); 
+                pixelData[i * 4] = pixelValue; 
+                pixelData[i * 4 + 1] = pixelValue;
+                pixelData[i * 4 + 2] = pixelValue; 
+                pixelData[i * 4 + 3] = 255;
             }
+
+
             return CreateBitmap(width, height, pixelData);
 
         }
@@ -264,41 +297,78 @@ namespace Grafika.Services
         {
             return BitmapSource.Create(width, height, 96, 96, PixelFormats.Bgra32, null, data, width * 4);
         }
-        private static IEnumerable<int> GetNumbersFromString(string line)
+
+        private void SaveAsPpm(ImageSource imageSource, string filePath)
         {
-            int startIndex = 0;
-            int length = 0;
-            bool isNumber = false;
+            BitmapSource bitmapSource = (BitmapSource)imageSource;
+            byte[] pixelData = ImageSourceToByteArray(bitmapSource);
 
-            for (int i = 0; i < line.Length; i++)
+            int width = bitmapSource.PixelWidth;
+            int height = bitmapSource.PixelHeight;
+
+            using (StreamWriter writer = new StreamWriter(filePath))
             {
-                char c = line[i];
+                writer.WriteLine("P3");
+                writer.WriteLine($"{width} {height}");
+                writer.WriteLine("255");
 
-                if (char.IsDigit(c))
+                for (int i = 0; i < pixelData.Length; i += 4)
                 {
-                    if (!isNumber)
-                    {
-                        startIndex = i;
-                        length = 1;
-                        isNumber = true;
-                    }
-                    else
-                    {
-                        length++;
-                    }
+                    writer.Write($"{pixelData[i + 2]} ");
+                    writer.Write($"{pixelData[i + 1]} ");
+                    writer.Write($"{pixelData[i]} ");
                 }
-                else if (isNumber)
-                {
-                    yield return int.Parse(line.Substring(startIndex, length));
-                    isNumber = false;
-                }
-            }
-
-            if (isNumber)
-            {
-                yield return int.Parse(line.Substring(startIndex, length));
             }
         }
 
+        private void SaveAsPbm(ImageSource imageSource, string filePath)
+        {
+            BitmapSource bitmapSource = (BitmapSource)imageSource;
+            byte[] pixelData = ImageSourceToByteArray(bitmapSource);
+
+            int width = bitmapSource.PixelWidth;
+            int height = bitmapSource.PixelHeight;
+
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine("P1");
+                writer.WriteLine($"{width} {height}");
+
+                for (int i = 0; i < pixelData.Length; i += 4)
+                {
+                    int grayscale = (int)(0.299 * pixelData[i + 2] + 0.587 * pixelData[i + 1] + 0.114 * pixelData[i]);
+                    int pbmValue = (grayscale < 128) ? 1 : 0;
+                    writer.Write($"{pbmValue} ");
+                }
+            }
+        }
+
+        private void SaveAsPgm(ImageSource imageSource, string filePath)
+        {
+            BitmapSource bitmapSource = (BitmapSource)imageSource;
+            byte[] pixelData = ImageSourceToByteArray(bitmapSource);
+
+            int width = bitmapSource.PixelWidth;
+            int height = bitmapSource.PixelHeight;
+
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine("P2");
+                writer.WriteLine($"{width} {height}");
+                writer.WriteLine("255");
+
+                for (int i = 0; i < pixelData.Length; i += 4)
+                {
+                    int grayscale = (int)(0.299 * pixelData[i + 2] + 0.587 * pixelData[i + 1] + 0.114 * pixelData[i]);
+                    writer.Write($"{grayscale} ");
+                }
+            }
+        }
+        private byte[] ImageSourceToByteArray(BitmapSource bitmapSource)
+        {
+            byte[] pixelData = new byte[bitmapSource.PixelWidth * bitmapSource.PixelHeight * 4];
+            bitmapSource.CopyPixels(pixelData, bitmapSource.PixelWidth * 4, 0);
+            return pixelData;
+        }
     }
 }

@@ -16,7 +16,6 @@ namespace Grafika.View_Models
     {
         public ICommand LoadImage { get; set; }
         public ICommand SaveImage { get; set; }
-        public ICommand ConvertedImage { get; set; }
     }
     public class FileViewModel: IFileViewModel
     {
@@ -28,23 +27,17 @@ namespace Grafika.View_Models
             _fileService = fileServic;
             LoadImage = new RelayCommand(Load);
             SaveImage = new RelayCommand(Save);
-            ConvertedImage = new RelayCommand(Image);
         }
         public ICommand LoadImage { get; set; }
         public ICommand SaveImage { get; set; }
-        public ICommand ConvertedImage { get; set; }
 
         private void Save(object sender)
         {
-            
+            _fileService.SaveImage(fileWindow);
         }
         private void Load(object sender)
         {
             _fileService.LoadImage(fileWindow);
-        }
-        private void Image(object sender)
-        {
-
         }
         public event PropertyChangedEventHandler? PropertyChanged;
     }
