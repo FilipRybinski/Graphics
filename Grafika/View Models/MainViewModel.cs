@@ -27,6 +27,8 @@ namespace Grafika
         public ICommand ClearCommand { get; set; }
         public ICommand LoadCommand { get; set; }
         public ICommand SaveCommand { get; set; }
+        public ICommand OpenCube { get; set; }
+        public ICommand OpenFileReader { get; set; }
     }
     public class MainViewModel : IMainViewModel
     {
@@ -66,6 +68,8 @@ namespace Grafika
             TextCommand=new RelayCommand(Text);
             ClearCommand=new RelayCommand(Clear);
             SaveCommand = new RelayCommand(Save);
+            OpenCube = new RelayCommand(OpenCubeWindow);
+            OpenFileReader = new RelayCommand(OpenFileReaderWindow);
 
             _mouseHandler.AttachCanvas(canvas);
             _mouseHandler.getInstance().MouseDownEvent += MouseDownHandler;
@@ -95,6 +99,8 @@ namespace Grafika
         public ICommand LoadCommand { get; set; }
         public ICommand SaveCommand { get; set; }
         public ICommand ValueChange { get; set; }
+        public ICommand OpenCube { get; set; }
+        public ICommand OpenFileReader { get; set; }
         private void Shifting(object sender)
         {
             action = Action.Shifting;
@@ -201,6 +207,16 @@ namespace Grafika
         private void OnValueChangeHSV(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             _colorService.updateHSV(window);
+        }
+        private void OpenCubeWindow(object sender)
+        {
+            CubeWindow CubeWindow = new CubeWindow();
+            CubeWindow.Show();
+        }
+        private void OpenFileReaderWindow(object sender)
+        {
+            FileWindow FileWindow = new FileWindow(_fileSerivce);
+            FileWindow.Show();
         }
         private void Clear(object sender)
         {

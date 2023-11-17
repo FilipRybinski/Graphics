@@ -20,9 +20,9 @@ using Point = System.Windows.Point;
 
 namespace Grafika
 {
-        public partial class RGBCube : Window
+        public partial class CubeWindow : Window
         {
-            public RGBCube()
+            public CubeWindow()
             {
                 InitializeComponent();
                 CreateCubeWalls();

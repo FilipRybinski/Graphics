@@ -33,11 +33,7 @@ namespace Grafika
             serviceProvider = services.BuildServiceProvider();
             this.DataContext = serviceProvider.GetRequiredService<IMainViewModel>();
         }
-        private void OpenRGBWindow_Click(object sender, RoutedEventArgs e)
-        {
-            RGBCube rgbCubeWindow = new RGBCube();
-            rgbCubeWindow.Show();
-        }
+        private void OpenFileLoader(object sender, RoutedEventArgs e){}
         private void ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e){}
         private void RadioButton(object sender, RoutedEventArgs e){}
         private void MouseDownHandler(object sender, MouseButtonEventArgs e){}
