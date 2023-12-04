@@ -15,10 +15,25 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Grid.Row="0">
-            <Button Content="Load Image" Command="{Binding LoadImage}" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="80"/>
-            <Button Content="Save Image" Command="{Binding SaveImage}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"  Width="80"/>
+        <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Grid.RowSpan="2" >
+            <StackPanel Orientation="Vertical" Grid.Row="0" Grid.ColumnSpan="2"  Grid.RowSpan="2" Height="432" Width="137">
+                <StackPanel>
+                    <Button Content="Load Image" Command="{Binding LoadImage}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="80"/>
+                    <Button Content="Save Image" Command="{Binding SaveImage}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="80"/>
+                </StackPanel>
+                <StackPanel>
+                    <Button Content="Zastosuj"  Command="{Binding LoadImage}" Margin="10 10 0 20" HorizontalAlignment="Center" Width="80" />
+                </StackPanel>
+                <StackPanel>
+                    <Slider x:Name="brightness" Minimum="0" Value="{Binding ElementName=brightnessText, Path=Text}" HorizontalAlignment="Center"  Maximum="255" ValueChanged="ValueChanged" Width="80"/>
+                    <TextBlock Text="Jasnosc" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="brightnessText" Text="{Binding ElementName=brightness, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" TextAlignment="Center"  />
+                    <Button Content="Zastosuj Jasność" Command="{Binding LoadImage}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Width="663">
+                <Image Name="ImageView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1" Source="{Binding ConvertedPbmImage}" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+            </StackPanel>
         </StackPanel>
-        <Image Name="ImageView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1" Source="{Binding ConvertedPbmImage}" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor" />
     </Grid>
 </Window>

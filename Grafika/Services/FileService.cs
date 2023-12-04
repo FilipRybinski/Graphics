@@ -226,6 +226,7 @@ namespace Grafika.Services
                                     fileWindow.ImageView.Source = CreatePbmImage(width, height, pixels);
                                     return;
                                 case "P5":
+                                    fileWindow.ImageView.Source = CreatePgmImage(width, height, pixels);
                                     break;
                                 case "P6":
                                     fileWindow.ImageView.Source = CreatePpmImage(width, height, pixels);

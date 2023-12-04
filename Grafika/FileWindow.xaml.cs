@@ -23,5 +23,6 @@ namespace Grafika
             InitializeComponent();
             DataContext = new FileViewModel(fileSerivce, this);
         }
+        private void ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { }
     }
 }
