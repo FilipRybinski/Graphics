@@ -36,6 +36,8 @@ namespace Grafika
         private readonly IFileSerivce _fileSerivce;
         private readonly IColorService _colorService;
         private readonly IColorHandler _colorHandler;
+        private readonly IFilterService _filterService;
+        private readonly IOperationService _operationService;
         private IMouseHandler _mouseHandler;
         private Canvas paintSufrace;
         private UIElement optionSurface;
@@ -49,13 +51,17 @@ namespace Grafika
             IDrawService drawService,
             IMouseHandler mouseHanlder,
             IColorService colorService,
-            IColorHandler colorHandler)
+            IColorHandler colorHandler,
+            IFilterService filterService,
+            IOperationService operationService)
         {
             _drawService = drawService;
             _fileSerivce=fileSerivce;
             _mouseHandler = mouseHanlder;
             _colorService = colorService;
             _colorHandler = colorHandler;
+            _filterService = filterService;
+            _operationService = operationService;
             optionSurface = _optionSurface;
             window = mainWindow;
             ShiftingCommand = new RelayCommand(Shifting);
@@ -215,7 +221,7 @@ namespace Grafika
         }
         private void OpenFileReaderWindow(object sender)
         {
-            FileWindow FileWindow = new FileWindow(_fileSerivce);
+            FileWindow FileWindow = new FileWindow(_fileSerivce,_filterService,_operationService);
             FileWindow.Show();
         }
         private void Clear(object sender)

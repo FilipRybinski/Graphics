@@ -27,6 +27,7 @@ namespace Grafika.Services
     public class FileService : IFileSerivce
     {
         private CommandQueueHandler _commandQueueHandler = new CommandQueueHandler();
+
         public void SaveFile(Canvas paintSurface)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -62,7 +63,7 @@ namespace Grafika.Services
             }
             var saveFileDialog = new SaveFileDialog
             {
-                Filter = "PBM Files (*.pbm)|*.pbm|PGM Files (*.pgm)|*.pgm|PPM Files (*.ppm)|*.ppm",
+                Filter = "PBM Files (*.pbm)|*.pbm|PGM Files (*.pgm)|*.pgm|PPM Files (*.ppm)|*.ppm |JPG Files (*.jpg)|*.jpg|PNG Files (*.png)|*.png",
                 Title = "Save Image"
             };
             if (saveFileDialog.ShowDialog() == true)
@@ -78,6 +79,12 @@ namespace Grafika.Services
                     case "pgm":
                         SaveAsPgm(fileWindow.ImageView.Source, saveFileDialog.FileName);
                         break;
+                    case "jpg":
+                        SaveAsJpg(fileWindow.ImageView.Source, saveFileDialog.FileName);
+                        break;
+                    case "png":
+                        SaveAsPng(fileWindow.ImageView.Source, saveFileDialog.FileName);
+                        break;
                     default:
                         throw new FormatException();
                 }
@@ -89,11 +96,15 @@ namespace Grafika.Services
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "PBM Files (*.pbm)|*.pbm|PGM Files (*.pgm)|*.pgm|PPM Files (*.ppm)|*.ppm",
+                Filter = "PBM Files (*.pbm)|*.pbm|PGM Files (*.pgm)|*.pgm|PPM Files (*.ppm)|*.ppm|JPG Files (*.jpg)|*.jpg|PNG Files (*.png)|*.png",
                 Title = "Load Image"
             };
             if (openFileDialog.ShowDialog() == true)
             {
+                var fileExtenstion = openFileDialog.FileName.Substring(openFileDialog.FileName.Length - 3).ToLower();
+                if (fileExtenstion.Equals("jpg") || fileExtenstion.Equals("png")){
+                    fileWindow.ImageView.Source = new BitmapImage(new Uri(openFileDialog.FileName));
+                }
                 ICommand loadImageCommand = new RelayCommand(param => {
                     ReadFile(openFileDialog.FileName,fileWindow);
                 });
@@ -362,6 +373,32 @@ namespace Grafika.Services
                 {
                     int grayscale = (int)(0.299 * pixelData[i + 2] + 0.587 * pixelData[i + 1] + 0.114 * pixelData[i]);
                     writer.Write($"{grayscale} ");
+                }
+            }
+        }
+        private void SaveAsPng(ImageSource imageSource, string filePath)
+        {
+            if (imageSource is BitmapSource bitmapSource)
+            {
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+
+                using (var fileStream = new System.IO.FileStream(filePath, System.IO.FileMode.Create))
+                {
+                    encoder.Save(fileStream);
+                }
+            }
+        }
+        private void SaveAsJpg(ImageSource imageSource, string filePath)
+        {
+            if (imageSource is BitmapSource bitmapSource)
+            {
+                JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+
+                using (var fileStream = new System.IO.FileStream(filePath, System.IO.FileMode.Create))
+                {
+                    encoder.Save(fileStream);
                 }
             }
         }

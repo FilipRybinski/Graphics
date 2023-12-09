@@ -21,6 +21,8 @@ namespace Grafika
             services.AddSingleton<IColorService, ColorService>();
             services.AddSingleton<IColorHandler, ColorHandler>();
             services.AddSingleton<IConversionService, ConversionService>();
+            services.AddSingleton<IOperationService, OperationService>();
+            services.AddSingleton<IFilterService, FilterService>();
             services.AddTransient<IMainViewModel>(provider =>
             {
                 var drawService = provider.GetRequiredService<IDrawService>();
@@ -28,7 +30,9 @@ namespace Grafika
                 var mouseHandler=provider.GetRequiredService<IMouseHandler>();
                 var colorService=provider.GetRequiredService<IColorService>();
                 var colorHandler=provider.GetRequiredService<IColorHandler>();
-                return new MainViewModel(paintSurface, this, optionSurface, fileService, drawService,mouseHandler, colorService,colorHandler);
+                var filterService = provider.GetRequiredService<IFilterService>();
+                var operationService = provider.GetRequiredService<IOperationService>();
+                return new MainViewModel(paintSurface, this, optionSurface, fileService, drawService,mouseHandler, colorService,colorHandler,filterService,operationService);
             });
             serviceProvider = services.BuildServiceProvider();
             this.DataContext = serviceProvider.GetRequiredService<IMainViewModel>();

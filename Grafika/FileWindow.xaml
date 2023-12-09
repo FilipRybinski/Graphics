@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Grafika"
         mc:Ignorable="d"
-        Title="FileWindow" Height="450" Width="800">
+        Title="FileWindow" Height="650" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -16,19 +16,27 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Grid.RowSpan="2" >
-            <StackPanel Orientation="Vertical" Grid.Row="0" Grid.ColumnSpan="2"  Grid.RowSpan="2" Height="432" Width="137">
+            <StackPanel Orientation="Vertical" Grid.Row="0" Grid.ColumnSpan="2"  Grid.RowSpan="2" Height="632" Width="137">
                 <StackPanel>
                     <Button Content="Load Image" Command="{Binding LoadImage}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="80"/>
-                    <Button Content="Save Image" Command="{Binding SaveImage}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="80"/>
+                    <Button Content="Save Image" Command="{Binding SaveImage}" Margin="10 10 0 20" HorizontalAlignment="Center" Width="80"/>
                 </StackPanel>
                 <StackPanel>
-                    <Button Content="Zastosuj"  Command="{Binding LoadImage}" Margin="10 10 0 20" HorizontalAlignment="Center" Width="80" />
+                    <Slider x:Name="value" Minimum="0" Value="{Binding ElementName=valueText, Path=Text}" HorizontalAlignment="Center"  Maximum="255" ValueChanged="ValueChanged" Width="80"/>
+                    <TextBlock Text="Wartosc" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="valueText" Text="{Binding ElementName=value, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" TextAlignment="Center"  />
+                    <Button Content="Dodawanie"  Command="{Binding AddPixels}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="80" />
+                    <Button Content="Odejmowanie"  Command="{Binding SubtractPixels}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="80" />
+                    <Button Content="Mnozenie"  Command="{Binding MultiplyPixels}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="80" />
+                    <Button Content="Dzielenie"  Command="{Binding DividePixels}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="80" />
+                    <Button Content="Jasność" Command="{Binding BrightnessPixels}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                    <Button Content="Skala szarosci" Command="{Binding GrayScale}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                    <Button Content="Filtr wygladzajacy" Command="{Binding SmoothingFilter}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                    <Button Content="Filtr medianowy" Command="{Binding MedianFilter}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                    <Button Content="Rozmycie" Command="{Binding GaussianFilter}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                    <Button Content="Filtr wyostrzajacy" Command="{Binding HighPassFilter}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
                 </StackPanel>
                 <StackPanel>
-                    <Slider x:Name="brightness" Minimum="0" Value="{Binding ElementName=brightnessText, Path=Text}" HorizontalAlignment="Center"  Maximum="255" ValueChanged="ValueChanged" Width="80"/>
-                    <TextBlock Text="Jasnosc" HorizontalAlignment="Center"/>
-                    <TextBox x:Name="brightnessText" Text="{Binding ElementName=brightness, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" TextAlignment="Center"  />
-                    <Button Content="Zastosuj Jasność" Command="{Binding LoadImage}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel Width="663">

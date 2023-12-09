@@ -18,10 +18,10 @@ namespace Grafika
 {
     public partial class FileWindow : Window
     {
-        public FileWindow(IFileSerivce fileSerivce)
+        public FileWindow(IFileSerivce fileSerivce,IFilterService filterService, IOperationService operationService)
         {
             InitializeComponent();
-            DataContext = new FileViewModel(fileSerivce, this);
+            DataContext = new FileViewModel(fileSerivce, this,filterService,operationService);
         }
         private void ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { }
     }
