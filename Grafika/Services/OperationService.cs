@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Grafika.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,11 +10,11 @@ namespace Grafika.Services
 {
     public interface IOperationService
     {
-        public void Operation(FileWindow fileWindow, string operation);
+        public void Operation(FileWindow fileWindow, OperationType operation);
     }
     class OperationService:IOperationService
     {
-        public void Operation(FileWindow fileWindow, string operation)
+        public void Operation(FileWindow fileWindow, OperationType operation)
         {
             var value =convertValue(fileWindow);
             if (fileWindow.ImageView.Source is BitmapSource bitmapSource)
@@ -35,38 +36,38 @@ namespace Grafika.Services
                     byte red = pixelData[i + 2];
                     switch (operation)
                     {
-                        case "add":
+                        case OperationType.Add:
                             red = (byte)Math.Min(255, red + value);
                             green = (byte)Math.Min(255, green + value);
                             blue = (byte)Math.Min(255, blue + value);
                             break;
-                        case "substract":
+                        case OperationType.Substract:
                             red = (byte)Math.Max(0, red - value);
                             green = (byte)Math.Max(0, green - value);
                             blue = (byte)Math.Max(0, blue - value);
 
                             break;
-                        case "multiply":
+                        case OperationType.Multiply:
                             red = (byte)Math.Min(255, red * value);
                             green = (byte)Math.Min(255, green * value);
                             blue = (byte)Math.Min(255, blue * value);
                             break;
-                        case "divide":
+                        case OperationType.Divide:
                             red = (byte)Math.Max(0, red / value);
                             green = (byte)Math.Max(0, green / value);
                             blue = (byte)Math.Max(0, blue / value);
                             break;
-                        case "brightness":
+                        case OperationType.Brightness:
                             red = (byte)Math.Max(0, Math.Min(255, red + value));
                             green = (byte)Math.Max(0, Math.Min(255, green + value));
                             blue = (byte)Math.Max(0, Math.Min(255, blue + value));
                             break;
-                        case "gray-average":
+                        case OperationType.GrayAverage:
                             red = (byte)((blue + green + red) / 3);
                             green = (byte)((blue + green + red) / 3);
                             blue = (byte)((blue + green + red) / 3);
                             break;
-                        case "gray-max":
+                        case OperationType.GrayMax:
                             red = Math.Max(blue, Math.Max(green, red));
                             green = Math.Max(blue, Math.Max(green, red));
                             blue = Math.Max(blue, Math.Max(green, red));

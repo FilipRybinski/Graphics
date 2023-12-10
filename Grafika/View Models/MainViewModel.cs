@@ -38,6 +38,8 @@ namespace Grafika
         private readonly IColorHandler _colorHandler;
         private readonly IFilterService _filterService;
         private readonly IOperationService _operationService;
+        private readonly IChartService _chartService;
+        private readonly IBinarizationService _binarizationService;
         private IMouseHandler _mouseHandler;
         private Canvas paintSufrace;
         private UIElement optionSurface;
@@ -53,26 +55,30 @@ namespace Grafika
             IColorService colorService,
             IColorHandler colorHandler,
             IFilterService filterService,
-            IOperationService operationService)
+            IOperationService operationService,
+            IChartService chartService,
+            IBinarizationService binarizationService)
         {
             _drawService = drawService;
-            _fileSerivce=fileSerivce;
+            _fileSerivce = fileSerivce;
             _mouseHandler = mouseHanlder;
             _colorService = colorService;
             _colorHandler = colorHandler;
             _filterService = filterService;
             _operationService = operationService;
+            _chartService = chartService;
+            _binarizationService = binarizationService;
             optionSurface = _optionSurface;
             window = mainWindow;
             ShiftingCommand = new RelayCommand(Shifting);
-            RotateCommand= new RelayCommand(Rotate);
-            FreeHandCommand=new RelayCommand(FreeHand);
-            LineCommand=new RelayCommand(Line);
-            CircleCommand=new RelayCommand(Circle);
-            SquareCommand=new RelayCommand(Square);
-            TriangleCommand=new RelayCommand(Triangle);
-            TextCommand=new RelayCommand(Text);
-            ClearCommand=new RelayCommand(Clear);
+            RotateCommand = new RelayCommand(Rotate);
+            FreeHandCommand = new RelayCommand(FreeHand);
+            LineCommand = new RelayCommand(Line);
+            CircleCommand = new RelayCommand(Circle);
+            SquareCommand = new RelayCommand(Square);
+            TriangleCommand = new RelayCommand(Triangle);
+            TextCommand = new RelayCommand(Text);
+            ClearCommand = new RelayCommand(Clear);
             SaveCommand = new RelayCommand(Save);
             OpenCube = new RelayCommand(OpenCubeWindow);
             OpenFileReader = new RelayCommand(OpenFileReaderWindow);
@@ -221,7 +227,7 @@ namespace Grafika
         }
         private void OpenFileReaderWindow(object sender)
         {
-            FileWindow FileWindow = new FileWindow(_fileSerivce,_filterService,_operationService);
+            FileWindow FileWindow = new FileWindow(_fileSerivce,_filterService,_operationService,_chartService,_binarizationService);
             FileWindow.Show();
         }
         private void Clear(object sender)

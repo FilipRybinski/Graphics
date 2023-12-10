@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Grafika"
         mc:Ignorable="d"
-        Title="FileWindow" Height="650" Width="800">
+        Title="FileWindow" Height="550" Width="850">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -16,7 +16,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Grid.RowSpan="2" >
-            <StackPanel Orientation="Vertical" Grid.Row="0" Grid.ColumnSpan="2"  Grid.RowSpan="2" Height="632" Width="137">
+            <StackPanel Orientation="Vertical" Grid.Row="0" Grid.ColumnSpan="2"  Grid.RowSpan="2" Height="731" Width="137">
                 <StackPanel>
                     <Button Content="Load Image" Command="{Binding LoadImage}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="80"/>
                     <Button Content="Save Image" Command="{Binding SaveImage}" Margin="10 10 0 20" HorizontalAlignment="Center" Width="80"/>
@@ -35,12 +35,57 @@
                     <Button Content="Filtr medianowy" Command="{Binding MedianFilter}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
                     <Button Content="Rozmycie" Command="{Binding GaussianFilter}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
                     <Button Content="Filtr wyostrzajacy" Command="{Binding HighPassFilter}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                    <Button Content="Rozszerzenie H." Command="{Binding StretchChart}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                    <Button Content="Wyrownanie H." Command="{Binding  EqualizeChart}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
                 </StackPanel>
                 <StackPanel>
                 </StackPanel>
             </StackPanel>
-            <StackPanel Width="663">
-                <Image Name="ImageView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1" Source="{Binding ConvertedPbmImage}" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+            <StackPanel Orientation="Vertical" Width="663">
+                <StackPanel Margin="0 10 0 0" Orientation="Horizontal" Height="95">
+                    <StackPanel>
+                        <Slider x:Name="valueBin" Minimum="0" Value="{Binding ElementName=valueBinText, Path=Text}" HorizontalAlignment="Center"  Maximum="255" ValueChanged="ValueChanged" Width="80"/>
+                        <TextBlock Text="Wartosc Bin." HorizontalAlignment="Center"/>
+                        <TextBox x:Name="valueBinText" Text="{Binding ElementName=valueBin, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" TextAlignment="Center"  />
+                        <Button Content="Binaryzacja" Command="{Binding  BinarizatioThreshold}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <Slider x:Name="valueBinPer" Minimum="0" Value="{Binding ElementName=valueBinPerText, Path=Text}" HorizontalAlignment="Center"  Maximum="100" ValueChanged="ValueChanged" Width="80"/>
+                        <TextBlock Text="Wartosc Per." HorizontalAlignment="Center"/>
+                        <TextBox x:Name="valueBinPerText" Text="{Binding ElementName=valueBinPer, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" TextAlignment="Center"  />
+                        <Button Content="PBS" Command="{Binding  BinarizationPercentBlackSelection}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" >
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="MIS" Height="20" Command="{Binding BinarizationMeanIterativeSelection}" Margin="10 0 0 10" Width="100"/>
+                            <Button Content="Otsu" Height="20" Command="{Binding BinarizationOtsu}" Margin="10 0 0 10" Width="100"/>
+                            <Button Content="Niblack" Height="20" Command="{Binding BinarizationNiblack}" Margin="10 0 0 10" Width="100"/>
+                            <Button Content="Sauvola" Height="20" Command="{Binding BinarizationSauvola}" Margin="10 0 0 10" Width="100"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Vertical">
+                                <Slider x:Name="valueKer" Value="{Binding ElementName=valueKerText, Path=Text}" HorizontalAlignment="Center" Minimum="3"  Maximum="11" ValueChanged="ValueChanged" Width="80"/>
+                                <TextBlock Text="Kernel" HorizontalAlignment="Center"/>
+                                <TextBox x:Name="valueKerText" Text="{Binding ElementName=valueKer, Path=Value, StringFormat={}{0:0}}" Width="50" HorizontalAlignment="Center" TextAlignment="Center"  />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Vertical">
+                                    <Button Content="Dylatacja" Height="20" Command="{Binding  DilateFilter}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                                    <Button Content="Erozja" Height="20" Command="{Binding  ErodeFilter}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical">
+                                    <Button Content="Otwarcie" Height="20" Command="{Binding  OpenFilter}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                                    <Button Content="Domknięcie" Height="20" Command="{Binding  CloseFilter}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <Button Content="HitOrMiss" Height="20" Command="{Binding HitOrMissFilter}" Margin="10 10 0 0" HorizontalAlignment="Center" Width="100"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+
+                </StackPanel>
+                <Image Height="380"  Name="ImageView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1" Source="{Binding ConvertedPbmImage}" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor" />
             </StackPanel>
         </StackPanel>
     </Grid>

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace Grafika.Services
@@ -13,6 +15,11 @@ namespace Grafika.Services
         public WriteableBitmap? MedianFilter(BitmapSource bitmapSource);
         public WriteableBitmap? HighPassFilter(BitmapSource bitmapSource);
         public WriteableBitmap? GaussianFilter(BitmapSource bitmapSource);
+        public WriteableBitmap? Close(BitmapSource bitmapSource, int kernelSize);
+        public WriteableBitmap? Open(BitmapSource bitmapSource, int kernelSize);
+        public WriteableBitmap? Erode(BitmapSource bitmapSource, int kernelSize);
+        public WriteableBitmap? Dilate(BitmapSource bitmapSource, int kernelSize);
+        public WriteableBitmap? HitOrMiss(BitmapSource bitmapSource, byte[,] mask);
     }
     public class FilterService:IFilterService
     {
@@ -265,6 +272,191 @@ namespace Grafika.Services
         {
             values.Sort();
             return values[values.Count / 2];
+        }
+        public WriteableBitmap? Dilate(BitmapSource bitmapSource, int kernelSize)
+        {
+            if (bitmapSource != null)
+            {
+                int width = bitmapSource.PixelWidth;
+                int height = bitmapSource.PixelHeight;
+
+                int bytesPerPixel = (bitmapSource.Format.BitsPerPixel + 7) / 8;
+                int stride = width * bytesPerPixel;
+
+                WriteableBitmap outputImage = new WriteableBitmap(width, height, 96, 96, PixelFormats.Gray8, null);
+                byte[] pixelData = new byte[stride * height];
+                byte[] outputPixelData = new byte[stride * height];
+
+                bitmapSource.CopyPixels(pixelData, stride, 0);
+
+                int borderOffset = (kernelSize - 1) / 2;
+
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        int index = y * stride + x * bytesPerPixel;
+                        byte maxIntensity = 0;
+
+                        for (int j = -borderOffset; j <= borderOffset; j++)
+                        {
+                            for (int i = -borderOffset; i <= borderOffset; i++)
+                            {
+                                int neighborX = x + i;
+                                int neighborY = y + j;
+
+                                if (neighborX >= 0 && neighborX < width && neighborY >= 0 && neighborY < height)
+                                {
+                                    int neighborIndex = neighborY * stride + neighborX * bytesPerPixel;
+                                    byte intensity = pixelData[neighborIndex];
+                                    maxIntensity = Math.Max(maxIntensity, intensity);
+                                }
+                            }
+                        }
+
+                        outputPixelData[index] = maxIntensity;
+                    }
+                }
+
+                outputImage.WritePixels(new Int32Rect(0, 0, width, height), outputPixelData, stride, 0);
+                return outputImage;
+            }
+            return null;
+        }
+
+        public WriteableBitmap? Erode(BitmapSource bitmapSource, int kernelSize)
+        {
+            if (bitmapSource != null)
+            {
+                int width = bitmapSource.PixelWidth;
+                int height = bitmapSource.PixelHeight;
+
+                int bytesPerPixel = (bitmapSource.Format.BitsPerPixel + 7) / 8;
+                int stride = width * bytesPerPixel;
+
+                WriteableBitmap outputImage = new WriteableBitmap(width, height, 96, 96, PixelFormats.Gray8, null);
+                byte[] pixelData = new byte[stride * height];
+                byte[] outputPixelData = new byte[stride * height];
+
+                bitmapSource.CopyPixels(pixelData, stride, 0);
+
+                int borderOffset = (kernelSize - 1) / 2;
+
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        int index = y * stride + x * bytesPerPixel;
+                        byte minIntensity = 255;
+
+                        for (int j = -borderOffset; j <= borderOffset; j++)
+                        {
+                            for (int i = -borderOffset; i <= borderOffset; i++)
+                            {
+                                int neighborX = x + i;
+                                int neighborY = y + j;
+
+                                if (neighborX >= 0 && neighborX < width && neighborY >= 0 && neighborY < height)
+                                {
+                                    int neighborIndex = neighborY * stride + neighborX * bytesPerPixel;
+                                    byte intensity = pixelData[neighborIndex];
+                                    minIntensity = Math.Min(minIntensity, intensity);
+                                }
+                            }
+                        }
+
+                        outputPixelData[index] = minIntensity;
+                    }
+                }
+
+                outputImage.WritePixels(new Int32Rect(0, 0, width, height), outputPixelData, stride, 0);
+                return outputImage;
+            }
+            return null;
+        }
+
+        public WriteableBitmap? Open(BitmapSource bitmapSource, int kernelSize)
+        {
+            WriteableBitmap? tempErode = Erode(bitmapSource, kernelSize);
+            if (tempErode != null)
+            {
+                return Dilate(tempErode, kernelSize);
+            }
+            return null;
+        }
+
+        public WriteableBitmap? Close(BitmapSource bitmapSource, int kernelSize)
+        {
+            WriteableBitmap? tempDilate = Dilate(bitmapSource, kernelSize);
+            if (tempDilate != null)
+            {
+                return Erode(tempDilate, kernelSize);
+            }
+            return null;
+        }
+        public WriteableBitmap? HitOrMiss(BitmapSource bitmapSource, byte[,] mask)
+        {
+            if (bitmapSource != null && mask != null)
+            {
+                int width = bitmapSource.PixelWidth;
+                int height = bitmapSource.PixelHeight;
+
+                int bytesPerPixel = (bitmapSource.Format.BitsPerPixel + 7) / 8;
+                int stride = width * bytesPerPixel;
+
+                WriteableBitmap outputImage = new WriteableBitmap(width, height, 96, 96, PixelFormats.Gray8, null);
+                byte[] pixelData = new byte[stride * height];
+                byte[] outputPixelData = new byte[stride * height];
+
+                bitmapSource.CopyPixels(pixelData, stride, 0);
+
+                int maskWidth = mask.GetLength(1);
+                int maskHeight = mask.GetLength(0);
+                int maskCenterX = maskWidth / 2;
+                int maskCenterY = maskHeight / 2;
+
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        bool hit = true;
+
+                        for (int j = 0; j < maskHeight; j++)
+                        {
+                            for (int i = 0; i < maskWidth; i++)
+                            {
+                                int neighborX = x + i - maskCenterX;
+                                int neighborY = y + j - maskCenterY;
+
+                                if (neighborX >= 0 && neighborX < width && neighborY >= 0 && neighborY < height)
+                                {
+                                    int neighborIndex = neighborY * stride + neighborX * bytesPerPixel;
+                                    byte intensity = pixelData[neighborIndex];
+
+                                    if (mask[j, i] != 255 && intensity != mask[j, i])
+                                    {
+                                        hit = false;
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    hit = false;
+                                    break;
+                                }
+                            }
+
+                            if (!hit)
+                                break;
+                        }
+
+                        outputPixelData[y * stride + x * bytesPerPixel] = hit ? (byte)255 : (byte)0;
+                    }
+                }
+                outputImage.WritePixels(new Int32Rect(0, 0, width, height), outputPixelData, stride, 0);
+                return outputImage;
+            }
+            return null;
         }
 
     }

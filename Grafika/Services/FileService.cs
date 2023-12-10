@@ -4,17 +4,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
-using System.Text.RegularExpressions;
-using System.Windows.Shapes;
-using System.Reflection.PortableExecutable;
 using Grafika.Handler;
 using Grafika.Commands;
 using System.Windows.Input;
+using Grafika.Enums;
 
 namespace Grafika.Services
 {
@@ -70,19 +67,19 @@ namespace Grafika.Services
             {
                 switch(saveFileDialog.FileName.Substring(saveFileDialog.FileName.Length- 3).ToLower())
                 {
-                    case "ppm":
+                    case FileType.PPM:
                         SaveAsPpm(fileWindow.ImageView.Source, saveFileDialog.FileName);
                         break;
-                    case "pbm":
+                    case FileType.PBM:
                         SaveAsPbm(fileWindow.ImageView.Source, saveFileDialog.FileName);
                         break;
-                    case "pgm":
+                    case FileType.PGM:
                         SaveAsPgm(fileWindow.ImageView.Source, saveFileDialog.FileName);
                         break;
-                    case "jpg":
+                    case FileType.JPG:
                         SaveAsJpg(fileWindow.ImageView.Source, saveFileDialog.FileName);
                         break;
-                    case "png":
+                    case FileType.PNG:
                         SaveAsPng(fileWindow.ImageView.Source, saveFileDialog.FileName);
                         break;
                     default:
