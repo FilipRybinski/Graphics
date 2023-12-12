@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Grafika"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1100">
+        Title="MainWindow" Height="800" Width="1300">
     <Grid>
         <Canvas  Name="paintSurface" MouseDown="MouseDownHandler" MouseMove="MouseMoveHandler" MouseUp="MouseUpHandler">
             <StackPanel Name="optionSurface">
-                <StackPanel  VerticalAlignment="Top" Width="1100" HorizontalAlignment="Center">
+                <StackPanel  VerticalAlignment="Top" Width="1300" HorizontalAlignment="Center">
                     <Menu>
                         <MenuItem Header="File">
                             <MenuItem Header="Save" Command="{ Binding SaveCommand }"/>
@@ -26,6 +26,8 @@
                         <Button Content="Clear" Command="{ Binding ClearCommand }" Width="80"/>
                         <Button Content="Kostka" Command="{Binding OpenCube}"  Width="80"/>
                         <Button Content="Files" Command="{Binding OpenFileReader}"  Width="80"/>
+                        <Button Content="BuzierA" Command="{Binding OpenBuzierA}"  Width="80"/>
+                        <Button Content="BuzierB" Command="{Binding OpenBuzierB}"  Width="80"/>
                     </Menu>
                 </StackPanel>
                 <StackPanel Margin="10" HorizontalAlignment="Left" Height="763" RenderTransformOrigin="0.5,0.5" Canvas.Left="5" Canvas.Top="44" Width="101">

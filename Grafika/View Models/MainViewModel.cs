@@ -2,6 +2,7 @@
 using Grafika.Enums;
 using Grafika.Handler;
 using Grafika.Services;
+using Grafika.Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,6 +30,8 @@ namespace Grafika
         public ICommand SaveCommand { get; set; }
         public ICommand OpenCube { get; set; }
         public ICommand OpenFileReader { get; set; }
+        public ICommand OpenBuzierB { get; set; }
+        public ICommand OpenBuzierA { get; set; }
     }
     public class MainViewModel : IMainViewModel
     {
@@ -85,7 +88,8 @@ namespace Grafika
             SaveCommand = new RelayCommand(Save);
             OpenCube = new RelayCommand(OpenCubeWindow);
             OpenFileReader = new RelayCommand(OpenFileReaderWindow);
-
+            OpenBuzierB = new RelayCommand(OpenBezierBWindow);
+            OpenBuzierA = new RelayCommand(OpenBezierAWindow);
             _mouseHandler.AttachCanvas(canvas);
             _mouseHandler.getInstance().MouseDownEvent += MouseDownHandler;
             _mouseHandler.getInstance().MouseMoveEvent += MouseMoveHandler;
@@ -116,6 +120,8 @@ namespace Grafika
         public ICommand ValueChange { get; set; }
         public ICommand OpenCube { get; set; }
         public ICommand OpenFileReader { get; set; }
+        public ICommand OpenBuzierB { get; set; }
+        public ICommand OpenBuzierA { get; set; }
         private void Shifting(object sender)
         {
             action = Action.Shifting;
@@ -227,6 +233,16 @@ namespace Grafika
         {
             CubeWindow CubeWindow = new CubeWindow();
             CubeWindow.Show();
+        }
+        private void OpenBezierBWindow(object sender)
+        {
+            BezierB buzier =new BezierB();
+            buzier.Show();
+        }
+        private void OpenBezierAWindow(object sender)
+        {
+            BezierA buzier = new BezierA();
+            buzier.Show();
         }
         private void OpenFileReaderWindow(object sender)
         {
