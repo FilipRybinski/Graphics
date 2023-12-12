@@ -40,6 +40,7 @@ namespace Grafika
         private readonly IOperationService _operationService;
         private readonly IChartService _chartService;
         private readonly IBinarizationService _binarizationService;
+        private readonly IAnalyzeService _AnalysisService;
         private IMouseHandler _mouseHandler;
         private Canvas paintSufrace;
         private UIElement optionSurface;
@@ -57,7 +58,8 @@ namespace Grafika
             IFilterService filterService,
             IOperationService operationService,
             IChartService chartService,
-            IBinarizationService binarizationService)
+            IBinarizationService binarizationService,
+            IAnalyzeService analysisService)
         {
             _drawService = drawService;
             _fileSerivce = fileSerivce;
@@ -68,6 +70,7 @@ namespace Grafika
             _operationService = operationService;
             _chartService = chartService;
             _binarizationService = binarizationService;
+            _AnalysisService = analysisService;
             optionSurface = _optionSurface;
             window = mainWindow;
             ShiftingCommand = new RelayCommand(Shifting);
@@ -227,7 +230,7 @@ namespace Grafika
         }
         private void OpenFileReaderWindow(object sender)
         {
-            FileWindow FileWindow = new FileWindow(_fileSerivce,_filterService,_operationService,_chartService,_binarizationService);
+            FileWindow FileWindow = new FileWindow(_fileSerivce,_filterService,_operationService,_chartService,_binarizationService,_AnalysisService);
             FileWindow.Show();
         }
         private void Clear(object sender)

@@ -41,7 +41,8 @@ namespace Grafika.View_Models
         public ICommand ErodeFilter { get; set; }
         public ICommand DilateFilter { get; set; }
         public ICommand HitOrMissFilter { get; set; }
-}
+        public ICommand GreenAnalysis { get; set; }
+    }
     public class FileViewModel: IFileViewModel
     {
         private readonly IFileSerivce _fileService;
@@ -49,8 +50,9 @@ namespace Grafika.View_Models
         private readonly IOperationService _operationService;
         private readonly IChartService _chartService;
         private readonly IBinarizationService _binarizationService;
+        private readonly IAnalyzeService _AnalysisService;
         private FileWindow fileWindow;
-        public FileViewModel(IFileSerivce fileServic,FileWindow _fileWindow, IFilterService filterService, IOperationService operationService, IChartService chartService, IBinarizationService binarizationService)
+        public FileViewModel(IFileSerivce fileServic,FileWindow _fileWindow, IFilterService filterService, IOperationService operationService, IChartService chartService, IBinarizationService binarizationService,IAnalyzeService analysisService)
         {
             fileWindow = _fileWindow;
             _fileService = fileServic;
@@ -58,6 +60,7 @@ namespace Grafika.View_Models
             _operationService = operationService;
             _chartService = chartService;
             _binarizationService = binarizationService;
+            _AnalysisService = analysisService;
             LoadImage = new RelayCommand(Load);
             SaveImage = new RelayCommand(Save);
             AddPixels = new RelayCommand(Add);
@@ -83,6 +86,7 @@ namespace Grafika.View_Models
             ErodeFilter = new RelayCommand(Erode);
             DilateFilter = new RelayCommand(Dilate);
             HitOrMissFilter=new RelayCommand(HitOrMiss);
+            GreenAnalysis = new RelayCommand(Analysis);
         }
         public ICommand LoadImage { get; set; }
         public ICommand SaveImage { get; set; }
@@ -109,6 +113,7 @@ namespace Grafika.View_Models
         public ICommand ErodeFilter { get; set; }
         public ICommand DilateFilter { get; set; }
         public ICommand HitOrMissFilter { get; set; }
+        public ICommand GreenAnalysis { get; set; }
         private void Save(object sender)
         {
             _fileService.SaveImage(fileWindow);
@@ -214,6 +219,10 @@ namespace Grafika.View_Models
                 { 0, 0, 0 }
             };
             fileWindow.ImageView.Source = _filterService.HitOrMiss((BitmapSource)fileWindow.ImageView.Source,mask);
+        }
+        private void Analysis(object sender)
+        {
+            _AnalysisService.AnalyzeImage((BitmapImage)fileWindow.ImageView.Source, fileWindow.valueAnalText.Text.Equals("") ? (int)0 : int.Parse(fileWindow.valueAnalText.Text), fileWindow);
         }
 
 
